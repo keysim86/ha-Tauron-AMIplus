@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5] - 2026-03-25
+
+### Zmieniono
+- Zrównoleglono żądania HTTP (asyncio.gather) — pobieranie danych jest teraz znacznie szybsze
+- Zużycie i generacja pobierane jednocześnie zamiast sekwencyjnie
+- Dane dzienne dla zakresu dat (miesiąc, rok, 30 dni) pobierane równolegle zamiast po kolei
+
 ## [1.0.4] - 2026-03-25
 
 ### Zmieniono

@@ -1,4 +1,5 @@
 """Update coordinator for TAURON sensors."""
+import asyncio
 import datetime
 import logging
 import re
@@ -135,23 +136,34 @@ class TauronAmiplusConnector:
         data = TauronAmiplusRawData()
         # data.payments = await self.get_moj_tauron()
         data.tariff = await self.login()
-        generation_max_cache = datetime.datetime.now()
-        data.consumption, consumption_max_cache = await self.get_data_set(generation=False)
         if self._show_generation or self._show_balanced:
-            data.generation, generation_max_cache = await self.get_data_set(generation=True)
+            (data.consumption, consumption_max_cache), (data.generation, generation_max_cache) = await asyncio.gather(
+                self.get_data_set(generation=False),
+                self.get_data_set(generation=True),
+            )
         else:
+            generation_max_cache = datetime.datetime.now()
+            data.consumption, consumption_max_cache = await self.get_data_set(generation=False)
             data.generation = TauronAmiplusDataSet()
         self._cache.delete_older_than(min(consumption_max_cache, generation_max_cache))
         return data
 
     async def get_data_set(self, generation) -> Tuple[TauronAmiplusDataSet, datetime.datetime]:
         dataset = TauronAmiplusDataSet()
-        dataset.json_reading = await self.get_reading(generation)
-        dataset.json_daily, dataset.daily_date = await self.get_values_daily(generation)
-        dataset.json_monthly = await self.get_values_monthly(generation)
-        dataset.json_yearly = await self.get_values_yearly(generation)
-        dataset.json_month_hourly = await self.get_values_month_hourly(generation)
-        dataset.json_last_30_days_hourly = await self.get_values_last_30_days_hourly(generation)
+        results = await asyncio.gather(
+            self.get_reading(generation),
+            self.get_values_daily(generation),
+            self.get_values_monthly(generation),
+            self.get_values_yearly(generation),
+            self.get_values_month_hourly(generation),
+            self.get_values_last_30_days_hourly(generation),
+        )
+        dataset.json_reading = results[0]
+        dataset.json_daily, dataset.daily_date = results[1]
+        dataset.json_monthly = results[2]
+        dataset.json_yearly = results[3]
+        dataset.json_month_hourly = results[4]
+        dataset.json_last_30_days_hourly = results[5]
         now = datetime.datetime.now()
         cache_max = datetime.datetime.now() - datetime.timedelta(days=32)
         if self._show_12_months:
@@ -375,8 +387,9 @@ class TauronAmiplusConnector:
             "zones": {},
             "zonesName": {}
         }}
-        for day in [day_from + datetime.timedelta(days=x) for x in range((day_to - day_from).days + 1)]:
-            day_data = await self.get_raw_values_daily_for_day(day, generation)
+        days = [day_from + datetime.timedelta(days=x) for x in range((day_to - day_from).days + 1)]
+        day_results = await asyncio.gather(*[self.get_raw_values_daily_for_day(day, generation) for day in days])
+        for day_data in day_results:
             if day_data is not None:
                 data["data"]["allData"].extend(day_data["data"]["allData"])
                 data["data"]["sum"] += day_data["data"]["sum"]

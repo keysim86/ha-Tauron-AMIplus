@@ -32,15 +32,19 @@ jobs:
             custom_components/${{ env.COMPONENT_NAME }}/manifest.json > /tmp/manifest.json
           mv /tmp/manifest.json custom_components/${{ env.COMPONENT_NAME }}/manifest.json
 
-      - name: Commit updated manifest
+      - name: Commit updated manifest via API
+        env:
+          FORGEJO_TOKEN: ${{ github.token }}
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@forgejo.keynet.ovh"
-          git fetch origin main
-          git checkout -B main origin/main
-          git add custom_components/${{ env.COMPONENT_NAME }}/manifest.json
-          git commit -m "chore: bump manifest version to ${{ steps.version.outputs.VERSION }}"
-          git push origin main
+          SHA=$(curl -s \
+            "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/contents/custom_components/${{ env.COMPONENT_NAME }}/manifest.json?ref=main" \
+            -H "Authorization: token $FORGEJO_TOKEN" | jq -r '.sha')
+          CONTENT=$(base64 -w 0 custom_components/${{ env.COMPONENT_NAME }}/manifest.json)
+          curl -s -X PUT \
+            "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/contents/custom_components/${{ env.COMPONENT_NAME }}/manifest.json" \
+            -H "Authorization: token $FORGEJO_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": \"chore: bump manifest version to ${{ steps.version.outputs.VERSION }}\", \"content\": \"$CONTENT\", \"sha\": \"$SHA\", \"branch\": \"main\"}"
 
       - name: Create zip
         run: |

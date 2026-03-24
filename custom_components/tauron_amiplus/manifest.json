@@ -1,12 +1,18 @@
 {
-    "domain": "tauron_amiplus",
-    "name": "Tauron AMIplus",
-    "codeowners": ["@keysim86"],
-    "config_flow": true,
-    "dependencies": ["recorder"],
-    "documentation": "https://github.com/keysim86/ha-Tauron-AMIplus",
-    "iot_class": "cloud_polling",
-    "issue_tracker": "https://github.com/keysim86/ha-Tauron-AMIplus/issues",
-    "requirements": ["requests"],
-    "version": "1.0.0"
+  "domain": "tauron_amiplus",
+  "name": "Tauron AMIplus",
+  "codeowners": [
+    "@keysim86"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "recorder"
+  ],
+  "documentation": "https://github.com/keysim86/ha-Tauron-AMIplus",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/keysim86/ha-Tauron-AMIplus/issues",
+  "requirements": [
+    "requests"
+  ],
+  "version": "1.0.0"
 }

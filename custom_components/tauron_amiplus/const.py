@@ -64,74 +64,74 @@ TYPE_AMOUNT_PAYMENT = f"{TYPE_AMOUNT}_PAYMENT"
 DEFAULT_UPDATE_INTERVAL = timedelta(hours=8, minutes=30)
 SENSOR_TYPES_YAML = {
     TYPE_CONSUMPTION_READING: {
-        "name": "Current consumption reading",
+        "name": "Odczyt licznika (pobór)",
         "state_class": SensorStateClass.TOTAL_INCREASING,
     },
     TYPE_CONSUMPTION_DAILY: {
-        "name": "Daily energy consumption",
+        "name": "Zużycie energii dobowe",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_CONSUMPTION_MONTHLY: {
-        "name": "Monthly energy consumption",
+        "name": "Zużycie energii miesięczne",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_CONSUMPTION_YEARLY: {
-        "name": "Yearly energy consumption",
+        "name": "Zużycie energii roczne",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_CONSUMPTION_LAST_12_MONTHS: {
-        "name": "Last 12 months energy consumption",
+        "name": "Zużycie energii ostatnie 12 miesięcy",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_GENERATION_READING: {
-        "name": "Current generation reading",
+        "name": "Odczyt licznika (oddanie)",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_GENERATION_DAILY: {
-        "name": "Daily energy generation",
+        "name": "Oddanie energii dobowe",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_GENERATION_MONTHLY: {
-        "name": "Monthly energy generation",
+        "name": "Oddanie energii miesięczne",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_GENERATION_YEARLY: {
-        "name": "Yearly energy generation",
+        "name": "Oddanie energii roczne",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_GENERATION_LAST_12_MONTHS: {
-        "name": "Last 12 months energy generation",
+        "name": "Oddanie energii ostatnie 12 miesięcy",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_BALANCED_DAILY: {
-        "name": "Daily balance",
+        "name": "Bilans dobowy",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_BALANCED_MONTHLY: {
-        "name": "Monthly balance",
+        "name": "Bilans miesięczny",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_BALANCED_YEARLY: {
-        "name": "Yearly balance",
+        "name": "Bilans roczny",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_BALANCED_LAST_12_MONTHS: {
-        "name": "Last 12 months balance",
+        "name": "Bilans ostatnie 12 miesięcy",
         "state_class": SensorStateClass.TOTAL,
     },
 }
 SENSOR_TYPES = {
     **SENSOR_TYPES_YAML,
     TYPE_CONSUMPTION_CONFIGURABLE: {
-        "name": "Configurable energy consumption",
+        "name": "Zużycie energii (konfigurowalne)",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_GENERATION_CONFIGURABLE: {
-        "name": "Configurable energy generation",
+        "name": "Oddanie energii (konfigurowalne)",
         "state_class": SensorStateClass.TOTAL,
     },
     TYPE_BALANCED_CONFIGURABLE: {
-        "name": "Configurable balance",
+        "name": "Bilans (konfigurowalny)",
         "state_class": SensorStateClass.TOTAL,
     },
     # TYPE_AMOUNT_PAYMENT: {

@@ -1,0 +1,92 @@
+{
+  "config": {
+    "step": {
+      "confirm": {
+        "description": "Ta integracja używa nieoficjalnego API do pobierania danych o zużyciu energii z TAURON eLicznik. Czy chcesz kontynuować?"
+      },
+      "init": {
+        "title": "Wprowadź parametry połączenia do TAURON eLicznik.",
+        "description": "{error_info}",
+        "data": {
+          "username": "Nazwa użytkownika używana do logowania w eLiczniku",
+          "password": "Hasło używane do logowania w eLiczniku"
+        }
+      },
+      "select_meter": {
+        "title": "Punkt poboru",
+        "description": "Wybierz punkt poboru, który chcesz skonfigurować\n\n {error_info}",
+        "data": {
+          "energy_meter_id": "Dostępne punkty poboru"
+        }
+      },
+      "config_options": {
+        "title": "Konfiguracja integracji",
+        "description": "Wybierz dane, które mają być pobrane przez integrację.\nAby ograniczyć użycie zasobów nie włączaj pozycji, które nie są potrzebne.",
+        "data": {
+          "energy_meter_name": "Nazwa punktu poboru, która ma być wyświetlana w interfejsie",
+          "show_generation_sensors": "Pobieranie danych o energii oddanej",
+          "show_balanced_sensors": "Obliczanie bilansowania godzinowego",
+          "show_balanced_year_sensors": "Obliczanie bilansowania godzinowego dla aktualnego roku",
+          "show_12_months_sensors": "Obliczanie podsumowań dla okresu 12 miesięcy",
+          "show_configurable_sensors": "Obliczanie podsumowań dla okresu o konfigurowalnym początku",
+          "show_configurable_sensors_date": "Początek okresu dla konfigurowalnych podsumowań",
+          "store_statistics": "Zapisywanie godzinowe statystyki (dla panelu Energia)"
+        }
+      },
+      "reauth_confirm": {
+        "description": "Integracja musi zaktualizować dane logowania.",
+        "title": "Błąd logowania {name}"
+      }
+    },
+    "error": {
+      "server_no_connection": "Nie można połączyć się z serwerem TAURON eLicznik: {error_info}",
+      "invalid_meter_id": "Nieprawidłowe ID punktu poboru",
+      "missing_configurable_start_date": "Nie skonfigurowano początku okresu dla sensorów konfigurowalnych"
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "description": "Wybierz dane, które mają być pobrane przez integrację.\nAby ograniczyć użycie zasobów nie włączaj pozycji, które nie są potrzebne.",
+        "data": {
+          "show_generation_sensors": "Pobieranie danych o energii oddanej",
+          "show_balanced_sensors": "Obliczanie bilansowania godzinowego",
+          "show_balanced_year_sensors": "Obliczanie bilansowania godzinowego dla aktualnego roku",
+          "show_12_months_sensors": "Obliczanie podsumowań dla okresu 12 miesięcy",
+          "show_configurable_sensors": "Obliczanie podsumowań dla okresu o konfigurowalnym początku",
+          "show_configurable_sensors_date": "Początek okresu dla konfigurowalnych podsumowań",
+          "store_statistics": "Zapisywanie godzinowe statystyki (dla panelu Energia)"
+        }
+      }
+    },
+    "error": {
+      "missing_configurable_start_date": "Nie skonfigurowano początku okresu dla sensorów konfigurowalnych"
+    }
+  },
+  "services": {
+    "download_statistics": {
+      "name": "Pobierz statystyki",
+      "description": "Pobiera dane historyczne dla wybranego urządzenia nadpisując wszystkie dotychczas pobrane wartości.",
+      "fields": {
+        "device_id": {
+          "name": "Docelowe urządzenie",
+          "description": "Urządzenie, dla którego będą pobrane statystyki."
+        },
+        "start_date": {
+          "name": "Data początkowa.",
+          "description": "Data, od której będą pobrane statystyki."
+        }
+      }
+    },
+    "clear_cache": {
+      "name": "Wyczyść cache",
+      "description": "Czyści cache dla wybranego urządzenia.",
+      "fields": {
+        "device_id": {
+          "name": "Docelowe urządzenie",
+          "description": "Urządzenie, dla którego zostanie wyczyszczone cache."
+        }
+      }
+    }
+  }
+}

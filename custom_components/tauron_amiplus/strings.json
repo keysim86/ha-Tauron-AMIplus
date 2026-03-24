@@ -1,0 +1,93 @@
+{
+  "config": {
+    "step": {
+      "confirm": {
+        "description": "This integration uses unofficial API to get energy usage data from TAURON eLicznik. Do you want to continue?"
+      },
+      "init": {
+        "title": "Enter the connection parameters to the TAURON eLicznik.",
+        "description": "We will add sensors to get energy usage data from TAURON eLicznik.\n\n {error_info}",
+        "data": {
+          "username": "Username used to login at eLicznik",
+          "password": "Password used to login at eLicznik"
+        }
+      },
+      "select_meter": {
+        "title": "Energy meter",
+        "description": "Choose an energy meter you want to configure\n\n {error_info}",
+        "data": {
+          "energy_meter_id": "Available energy meters"
+        }
+      },
+      "config_options": {
+        "title": "Configuration",
+        "description": "Select data that should be downloaded by the integration.\nDo not enable entries that aren't necessary to avoid excessive data loading times.",
+        "data": {
+          "energy_meter_name": "Name of the energy meter that should be used in UI",
+          "show_generation_sensors": "Enable downloading energy generation data",
+          "show_balanced_sensors": "Enable calculating balanced energy usage data",
+          "show_balanced_year_sensors": "Enable calculating balanced energy usage data for current year",
+          "show_12_months_sensors": "Enable calculating energy usage/generation for 12 months period",
+          "show_configurable_sensors": "Enable calculating energy usage/generation for a configurable data period",
+          "show_configurable_sensors_date": "Start date for configurable data period",
+          "store_statistics": "Store hourly statistics (for Energy dashboard)"
+        }
+      },
+      "reauth_confirm": {
+        "description": "Integration needs to re-authenticate your account in order to update credentials.",
+        "title": "Authentication expired for {name}"
+      }
+    },
+    "error": {
+      "server_no_connection": "Cannot connect to TAURON eLicznik server: {error_info}",
+      "invalid_meter_id": "Invalid energy meter ID",
+      "missing_configurable_start_date": "Missing start date for configurable sensors"
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "title": "Configuration",
+        "description": "Select data that should be downloaded by the integration.\nDo not enable entries that aren't necessary to avoid excessive data loading times.",
+        "data": {
+          "show_generation_sensors": "Enable downloading energy generation data",
+          "show_balanced_sensors": "Enable calculating balanced energy usage data",
+          "show_balanced_year_sensors": "Enable calculating balanced energy usage data for current year",
+          "show_12_months_sensors": "Enable calculating energy usage/generation for 12 months period",
+          "show_configurable_sensors": "Enable calculating energy usage/generation for a configurable data period",
+          "show_configurable_sensors_date": "Start date for configurable data period",
+          "store_statistics": "Store hourly statistics (for Energy dashboard)"
+        }
+      }
+    },
+    "error": {
+      "missing_configurable_start_date": "Missing start date for configurable sensors"
+    }
+  },
+  "services": {
+    "download_statistics": {
+      "name": "Download statistics",
+      "description": "Downloads statistics for a given meter. Overrides all already downloaded data.",
+      "fields": {
+        "device_id": {
+          "name": "Target device",
+          "description": "The device to download statistics for."
+        },
+        "start_date": {
+          "name": "Start date",
+          "description": "Start date of statistics to download."
+        }
+      }
+    },
+    "clear_cache": {
+      "name": "Clear cache",
+      "description": "Clear cache for a given meter.",
+      "fields": {
+        "device_id": {
+          "name": "Target device",
+          "description": "The device which cache should be cleared."
+        }
+      }
+    }
+  }
+}

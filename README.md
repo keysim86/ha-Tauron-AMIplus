@@ -10,7 +10,7 @@
 [hacs_shield]: https://img.shields.io/static/v1.svg?label=HACS&message=Default&style=popout&color=green&labelColor=41bdf5&logo=HomeAssistantCommunityStore&logoColor=white
 [hacs]: https://hacs.xyz/docs/default_repositories
 
-[latest_release]: https://github.com/PiotrMachowski/Home-Assistant-custom-components-Tauron-AMIplus/releases/latest
+[latest_release]: https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest
 [releases_shield]: https://img.shields.io/github/release/keysim86/ha-Tauron-AMIplus.svg?style=popout
 
 [releases]: https://github.com/keysim86/ha-Tauron-AMIplus/releases
@@ -108,7 +108,7 @@ sensor:
 
 ### Using [HACS](https://hacs.xyz/) (recommended)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=PiotrMachowski&repository=Home-Assistant-custom-components-Tauron-AMIplus&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=keysim86&repository=ha-Tauron-AMIplus&category=integration)
 
 * In _Integrations_ section add repository "Tauron AMIplus"
 * Install added repository
@@ -119,7 +119,7 @@ Download [*tauron_amiplus.zip*](https://github.com/keysim86/ha-Tauron-AMIplus/re
 ```bash
 mkdir -p custom_components/tauron_amiplus
 cd custom_components/tauron_amiplus
-wget https://github.com/PiotrMachowski/Home-Assistant-custom-components-Tauron-AMIplus/releases/latest/download/tauron_amiplus.zip
+wget https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest/download/tauron_amiplus.zip
 unzip tauron_amiplus.zip
 rm tauron_amiplus.zip
 ```

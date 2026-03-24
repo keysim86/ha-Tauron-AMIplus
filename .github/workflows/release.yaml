@@ -1,38 +1,82 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
 
 env:
   COMPONENT_NAME: tauron_amiplus
 
+permissions:
+  contents: write
+
 jobs:
   release:
+    if: ${{ !contains(github.server_url, 'github.com') }}
     name: Prepare release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
     steps:
-      - name: Download repo
-        uses: actions/checkout@v4.2.2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Adjust version number
-        shell: bash
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Update manifest version
         run: |
-          version="${{ github.event.release.tag_name }}"
-          yq e -P -o=json \
-            -i ".version = \"${version}\"" \
-            "${{ github.workspace }}/custom_components/${{ env.COMPONENT_NAME }}/manifest.json"
+          VERSION_NO="${{ steps.version.outputs.VERSION }}"
+          VERSION_NO="${VERSION_NO#v}"
+          jq --arg v "$VERSION_NO" '.version = $v' \
+            custom_components/${{ env.COMPONENT_NAME }}/manifest.json > /tmp/manifest.json
+          mv /tmp/manifest.json custom_components/${{ env.COMPONENT_NAME }}/manifest.json
 
-      - name: Zip ${{ env.COMPONENT_NAME }} dir
+      - name: Commit updated manifest
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@forgejo.keynet.ovh"
+          git add custom_components/${{ env.COMPONENT_NAME }}/manifest.json
+          git commit -m "chore: bump manifest version to ${{ steps.version.outputs.VERSION }}"
+          git push origin HEAD:master
+
+      - name: Create zip
         run: |
           cd "${{ github.workspace }}/custom_components/${{ env.COMPONENT_NAME }}"
           zip ${{ env.COMPONENT_NAME }}.zip -r ./
 
+      - name: Create Forgejo Release
+        env:
+          FORGEJO_TOKEN: ${{ github.token }}
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/releases" \
+            -H "Authorization: token $FORGEJO_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\": \"${{ steps.version.outputs.VERSION }}\", \"name\": \"Tauron AMIplus ${{ steps.version.outputs.VERSION }}\"}")
+          RELEASE_ID=$(echo $RESPONSE | jq -r '.id')
+          curl -s -X POST \
+            "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/releases/$RELEASE_ID/assets" \
+            -H "Authorization: token $FORGEJO_TOKEN" \
+            -F "attachment=@custom_components/${{ env.COMPONENT_NAME }}/${{ env.COMPONENT_NAME }}.zip"
 
-      - name: Upload zip to release
-        uses: softprops/action-gh-release@v2.1.0
-        with:
-          files: ${{ github.workspace }}/custom_components/${{ env.COMPONENT_NAME }}/${{ env.COMPONENT_NAME }}.zip
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "https://api.github.com/repos/keysim86/ha-Tauron-AMIplus/releases" \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\": \"${{ steps.version.outputs.VERSION }}\", \"target_commitish\": \"master\", \"name\": \"Tauron AMIplus ${{ steps.version.outputs.VERSION }}\"}")
+          echo "GitHub API response: $RESPONSE"
+          RELEASE_ID=$(echo $RESPONSE | jq -r '.id')
+          if [ "$RELEASE_ID" = "null" ] || [ -z "$RELEASE_ID" ]; then
+            echo "ERROR: Failed to create GitHub release"
+            exit 1
+          fi
+          curl -s -X POST \
+            "https://uploads.github.com/repos/keysim86/ha-Tauron-AMIplus/releases/$RELEASE_ID/assets?name=${{ env.COMPONENT_NAME }}.zip" \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/zip" \
+            --data-binary "@custom_components/${{ env.COMPONENT_NAME }}/${{ env.COMPONENT_NAME }}.zip"

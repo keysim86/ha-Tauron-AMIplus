@@ -37,10 +37,10 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@forgejo.keynet.ovh"
           git fetch origin main
-          git rebase origin/main
+          git checkout -B main origin/main
           git add custom_components/${{ env.COMPONENT_NAME }}/manifest.json
           git commit -m "chore: bump manifest version to ${{ steps.version.outputs.VERSION }}"
-          git push origin HEAD:main
+          git push origin main
 
       - name: Create zip
         run: |

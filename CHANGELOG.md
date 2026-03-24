@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2026-03-24
+
+### Zmieniono
+- Poprawiono workflow release — aktualizacja manifest.json przez Forgejo API zamiast git push
+
 ## [1.0.0] - 2026-03-24
 
 ### Zmieniono

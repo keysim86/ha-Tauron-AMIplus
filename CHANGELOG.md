@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.1] - 2026-04-03
+
+### Fixed
+- Brak etykiety tekstowej dla opcji "Pokaż sensor należności" w config flow i options flow — wyświetlała się nazwa zmiennej zamiast opisu; dodano tłumaczenia w `pl.json`, `en.json` i `strings.json`
+
 ## [1.1.0] - 2026-04-03
 
 ### Added

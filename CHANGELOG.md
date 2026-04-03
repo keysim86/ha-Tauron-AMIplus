@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.3] - 2026-04-03
+
+### Fixed
+- Brak wartości sensorów po restarcie HA: zmieniono kolejność inicjalizacji — `async_config_entry_first_refresh()` jest teraz wywoływane przed rejestracją sensorów, dzięki czemu dane są dostępne od razu; poprzednio przy nieudanym pierwszym pobraniu sensory czekały 8,5h na kolejny cykl
+
 ## [1.1.2] - 2026-04-03
 
 ### Fixed

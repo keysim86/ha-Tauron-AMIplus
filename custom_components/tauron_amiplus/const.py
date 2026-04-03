@@ -18,6 +18,7 @@ CONF_SHOW_BALANCED_YEAR = "show_balanced_year_sensors"
 CONF_SHOW_12_MONTHS = "show_12_months_sensors"
 CONF_SHOW_CONFIGURABLE = "show_configurable_sensors"
 CONF_SHOW_CONFIGURABLE_DATE = "show_configurable_sensors_date"
+CONF_SHOW_PAYMENT = "show_payment_sensor"
 CONF_STORE_STATISTICS = "store_statistics"
 CONST_DATE_FORMAT = "%d.%m.%Y"
 CONST_MAX_LOOKUP_RANGE = 7
@@ -134,8 +135,8 @@ SENSOR_TYPES = {
         "name": "Bilans (konfigurowalny)",
         "state_class": SensorStateClass.TOTAL,
     },
-    # TYPE_AMOUNT_PAYMENT: {
-    #     "name": "Account balance",
-    #     "state_class": SensorStateClass.MEASUREMENT,
-    # },
+    TYPE_AMOUNT_PAYMENT: {
+        "name": "Należności Mój Tauron",
+        "state_class": SensorStateClass.MEASUREMENT,
+    },
 }

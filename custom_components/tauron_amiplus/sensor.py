@@ -10,8 +10,8 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .connector import TauronAmiplusRawData
 from .const import (CONF_METER_ID, CONF_METER_NAME, CONF_SHOW_12_MONTHS, CONF_SHOW_BALANCED, CONF_SHOW_BALANCED_YEAR,
-                    CONF_SHOW_CONFIGURABLE, CONF_SHOW_CONFIGURABLE_DATE, CONF_SHOW_GENERATION, CONF_TARIFF,
-                    CONST_BALANCED, CONST_CONFIGURABLE, CONST_DAILY, CONST_GENERATION,
+                    CONF_SHOW_CONFIGURABLE, CONF_SHOW_CONFIGURABLE_DATE, CONF_SHOW_GENERATION, CONF_SHOW_PAYMENT,
+                    CONF_TARIFF, CONST_BALANCED, CONST_CONFIGURABLE, CONST_DAILY, CONST_GENERATION,
                     CONST_LAST_12_MONTHS, CONST_MONTHLY, CONST_READING, CONST_URL_SERVICE, CONST_YEARLY, DEFAULT_NAME,
                     DOMAIN, SENSOR_TYPES, SENSOR_TYPES_YAML, TYPE_BALANCED_CONFIGURABLE, TYPE_BALANCED_DAILY,
                     TYPE_BALANCED_LAST_12_MONTHS, TYPE_BALANCED_MONTHLY, TYPE_BALANCED_YEARLY,
@@ -85,6 +85,10 @@ async def async_setup_entry(hass, entry: TauronAmiplusConfigEntry, async_add_ent
         sensor_types = {k: v for k, v in sensor_types.items() if not k.endswith(CONST_LAST_12_MONTHS)}
     if not show_configurable:
         sensor_types = {k: v for k, v in sensor_types.items() if not k.endswith(CONST_CONFIGURABLE)}
+
+    show_payment = entry.options.get(CONF_SHOW_PAYMENT, False)
+    if not show_payment:
+        sensor_types = {k: v for k, v in sensor_types.items() if k != TYPE_AMOUNT_PAYMENT}
 
     for sensor_type, sensor_type_config in sensor_types.items():
         sensors.append(
@@ -162,7 +166,7 @@ class TauronAmiplusSensor(SensorEntity, CoordinatorEntity):
         dataset = data.generation if self._generation else data.consumption
         self._tariff = data.tariff
 
-        if self._sensor_type == TYPE_AMOUNT_PAYMENT and len(data.payments)>0:
+        if self._sensor_type == TYPE_AMOUNT_PAYMENT and data.payments and len(data.payments) > 0:
             self._state = data.payments[0].value
             payments = list(map(lambda p: dataclasses.asdict(p), data.payments))
             self._params = {"date": data.payments[0].date, "payments": payments}

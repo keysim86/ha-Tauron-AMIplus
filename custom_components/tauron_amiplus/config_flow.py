@@ -19,6 +19,7 @@ from .const import (
     CONF_SHOW_CONFIGURABLE,
     CONF_SHOW_CONFIGURABLE_DATE,
     CONF_SHOW_GENERATION,
+    CONF_SHOW_PAYMENT,
     CONF_STORE_STATISTICS,
     CONF_TARIFF,
     DOMAIN,
@@ -174,6 +175,7 @@ class TauronAmiplusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_SHOW_CONFIGURABLE_DATE, None
                     ),
                     CONF_STORE_STATISTICS: user_input.get(CONF_STORE_STATISTICS, True),
+                    CONF_SHOW_PAYMENT: user_input.get(CONF_SHOW_PAYMENT, False),
                 }
 
                 """Finish config flow"""
@@ -275,6 +277,10 @@ class TauronAmiplusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_STORE_STATISTICS,
                     default=user_input.get(CONF_STORE_STATISTICS, True),
                 ): bool,
+                vol.Required(
+                    CONF_SHOW_PAYMENT,
+                    default=user_input.get(CONF_SHOW_PAYMENT, False),
+                ): bool,
             }
         )
         return data_schema
@@ -356,6 +362,10 @@ class TauronAmiplusOptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Required(
                         CONF_STORE_STATISTICS,
                         default=self.get_option(CONF_STORE_STATISTICS, True),
+                    ): bool,
+                    vol.Required(
+                        CONF_SHOW_PAYMENT,
+                        default=self.get_option(CONF_SHOW_PAYMENT, False),
                     ): bool,
                 }
             ),

@@ -29,12 +29,13 @@ class TauronAmiplusUpdateCoordinator(DataUpdateCoordinator[TauronAmiplusRawData]
             show_configurable: bool = False,
             show_configurable_date: datetime.date | None = None,
             store_statistics: bool = False,
+            show_payment: bool = False,
     ):
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=DEFAULT_UPDATE_INTERVAL,
                          update_method=self.update_method)
         self.connector = TauronAmiplusConnector(username, password, meter_id, hass, config_entry_id, show_generation, show_12_months,
                                                 show_balanced, show_balanced_year, show_configurable,
-                                                show_configurable_date)
+                                                show_configurable_date, show_payment)
         self.meter_id = meter_id
         self.meter_name = meter_name
         self.show_generation = show_generation

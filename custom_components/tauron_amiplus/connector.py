@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple, Any
 
 from aiohttp import ClientSession
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
@@ -115,6 +115,7 @@ class TauronAmiplusConnector:
         show_balanced_yearly: bool = False,
         show_configurable: bool = False,
         show_configurable_date: datetime.date = None,
+        show_payment: bool = False,
     ):
         self._username = username
         self._password = password
@@ -127,6 +128,7 @@ class TauronAmiplusConnector:
         self._show_balanced_yearly = show_balanced_yearly
         self._show_configurable = show_configurable
         self._show_configurable_date = show_configurable_date
+        self._show_payment = show_payment
         self._session: ClientSession | None = None
         self._cache = DailyDataCache(meter_id)
         self._hass = hass
@@ -134,7 +136,8 @@ class TauronAmiplusConnector:
 
     async def get_raw_data(self) -> TauronAmiplusRawData:
         data = TauronAmiplusRawData()
-        # data.payments = await self.get_moj_tauron()
+        if self._show_payment:
+            data.payments = await self.get_moj_tauron()
         data.tariff = await self.login()
         if self._show_generation or self._show_balanced:
             (data.consumption, consumption_max_cache), (data.generation, generation_max_cache) = await asyncio.gather(
@@ -491,20 +494,20 @@ class TauronAmiplusConnector:
         if response_text is None:
             return []
         try:
-            # parser = BeautifulSoup(response_text, "html.parser")
-            # amounts = parser.select(".amount:not(.okay):not(.warning)")
-            # dates = parser.select(".date:not(.okay):not(.warning)")
+            parser = BeautifulSoup(response_text, "html.parser")
+            amounts = parser.select(".amount:not(.okay):not(.warning)")
+            dates = parser.select(".date:not(.okay):not(.warning)")
             payments = []
-            # for i in range(min(len(amounts), len(dates))):
-            #     try:
-            #         amount = float(amounts[i].text.strip().split("\n")[0].strip().replace(",", ".").replace(" zł", ""))
-            #         date = dates[i].text.replace("Termin:", "").strip()
-            #         payments.append(MojTauronPaymentData(amount, date))
-            #     except Exception as err:
-            #         _LOGGER.error("Error during parsing. %s", err)
+            for i in range(min(len(amounts), len(dates))):
+                try:
+                    amount = float(amounts[i].text.strip().split("\n")[0].strip().replace(",", ".").replace(" zł", "").replace("\xa0", ""))
+                    date = dates[i].text.replace("Termin:", "").strip()
+                    payments.append(MojTauronPaymentData(amount, date))
+                except Exception as err:
+                    _LOGGER.error("Error during parsing Mój Tauron payment entry. %s", err)
             return payments
         except Exception as err:
-            _LOGGER.error("Error during downloading. %s", err)
+            _LOGGER.error("Error during downloading Mój Tauron data. %s", err)
             return []
 
     @staticmethod

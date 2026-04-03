@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.0] - 2026-04-03
 
 ### Added
 - Sensor **Należności Mój Tauron** — pobiera nieopłacone faktury z portalu mój.tauron.pl; wartość to kwota pierwszej należności (PLN), atrybut `payments` zawiera pełną listę; wymagane włączenie opcji "Pokaż sensor należności" w konfiguracji integracji

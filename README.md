@@ -141,6 +141,13 @@ Then restart Home Assistant before applying configuration file changes.
 
   Once the data appears on [eLicznik website](https://elicznik.tauron-dystrybucja.pl) can fill such gaps using `tauron_amiplus.download_statistics` service.
 
+* **What is the "Należności Mój Tauron" sensor?**
+
+  When enabled in integration options, this sensor fetches unpaid invoices from [mój.tauron.pl](https://moj.tauron.pl).
+  The sensor value is the amount of the first (nearest) unpaid invoice in PLN.
+  The `payments` attribute contains the full list of all pending payments with their due dates.
+  Enable it via: _Settings_ → _Integrations_ → _Tauron AMIplus_ → _Configure_ → **Pokaż sensor należności (Mój Tauron)**.
+
 * **When does this integration update data?**
 
   This integration logs in and downloads data from eLicznik website every 8.5h.

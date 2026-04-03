@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.4] - 2026-04-03
+
+### Fixed
+- Przywrócono `async_request_refresh()` zamiast `async_config_entry_first_refresh()` — przy niedostępnym API Taurona podczas startu HA integracja rzucała `ConfigEntryNotReady` bez logów, blokując ładowanie; sensory pozostawały w stanie "niedostępny" bezterminowo
+
 ## [1.1.3] - 2026-04-03
 
 ### Fixed

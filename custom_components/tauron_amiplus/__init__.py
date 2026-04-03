@@ -88,10 +88,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: TauronAmiplusConf
         show_payment=show_payment,
     )
     config_entry.runtime_data = TauronAmiplusRuntimeData(tauron_amiplus_update_coordinator)
-    await tauron_amiplus_update_coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
     config_entry.async_on_unload(config_entry.add_update_listener(async_reload_entry))
     register_all_services(hass)
+    await tauron_amiplus_update_coordinator.async_request_refresh()
     return True
 
 

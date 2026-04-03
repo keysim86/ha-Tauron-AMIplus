@@ -488,12 +488,12 @@ class TauronAmiplusConnector:
         _LOGGER.debug(f"[{self._meter_id}]: {msg}")
 
     async def get_moj_tauron(self) -> list[MojTauronPaymentData]:
-        session, response_text = await self.login_service(CONST_URL_LOGIN_MOJ_TAURON, CONST_URL_SERVICE_MOJ_TAURON)
-        self.log("MÓJ TAURON")
-        self.log(response_text)
-        if response_text is None:
-            return []
         try:
+            session, response_text = await self.login_service(CONST_URL_LOGIN_MOJ_TAURON, CONST_URL_SERVICE_MOJ_TAURON)
+            self.log("MÓJ TAURON")
+            self.log(response_text)
+            if response_text is None:
+                return []
             parser = BeautifulSoup(response_text, "html.parser")
             amounts = parser.select(".amount:not(.okay):not(.warning)")
             dates = parser.select(".date:not(.okay):not(.warning)")

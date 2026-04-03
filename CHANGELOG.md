@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.2] - 2026-04-03
+
+### Fixed
+- Krytyczny błąd: wyjątek z `login_service()` w `get_moj_tauron()` propagował się poza blok try/except, powodując błąd koordynatora i brak aktualizacji WSZYSTKICH sensorów; przeniesiono całe wywołanie `login_service()` wewnątrz try/except
+
 ## [1.1.1] - 2026-04-03
 
 ### Fixed

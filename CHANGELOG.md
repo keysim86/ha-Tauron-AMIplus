@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.5] - 2026-04-04
+
+### Fixed
+- Startup HA blokowany przez `async_add_entities(sensors, True)` — `update_before_add=True` triggeruje pełny fetch danych (365 HTTP requestów) dla każdego sensora podczas rejestracji platformy; zmieniono na `async_add_entities(sensors)` — dane są dostarczane przez `_handle_coordinator_update` po zakończeniu pierwszego cyklu koordynatora
+
 ## [1.1.4] - 2026-04-03
 
 ### Fixed

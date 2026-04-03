@@ -103,7 +103,7 @@ async def async_setup_entry(hass, entry: TauronAmiplusConfigEntry, async_add_ent
             )
         )
 
-    async_add_entities(sensors, True)
+    async_add_entities(sensors)
 
 
 class TauronAmiplusSensor(SensorEntity, CoordinatorEntity):

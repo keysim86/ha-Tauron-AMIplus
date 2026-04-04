@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional, Tuple, Any
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ServerDisconnectedError
 from bs4 import BeautifulSoup
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
@@ -135,6 +135,14 @@ class TauronAmiplusConnector:
         self._storage_key = f"{STORAGE_KEY_PREFIX}_{config_entry_id}" if config_entry_id is not None else None
 
     async def get_raw_data(self) -> TauronAmiplusRawData:
+        try:
+            return await self._fetch_raw_data()
+        except ServerDisconnectedError:
+            _LOGGER.warning("[%s] Server disconnected, retrying in 5s...", self._meter_id)
+            await asyncio.sleep(5)
+            return await self._fetch_raw_data()
+
+    async def _fetch_raw_data(self) -> TauronAmiplusRawData:
         data = TauronAmiplusRawData()
         if self._show_payment:
             data.payments = await self.get_moj_tauron()

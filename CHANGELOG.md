@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.8] - 2026-04-04
+
+### Fixed
+- Dodano retry przy `ServerDisconnectedError` w `get_raw_data()`: przy pierwszym rozłączeniu serwera Tauron integracja czeka 5s i ponawia całe pobieranie danych zamiast od razu zgłaszać błąd do koordynatora
+
 ## [1.1.7] - 2026-04-04
 
 ### Fixed

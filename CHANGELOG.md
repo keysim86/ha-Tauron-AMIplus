@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.6] - 2026-04-04
+
+### Fixed
+- Startup HA anulowany przez `CancelledError`: `async_request_refresh()` był `await`owany bezpośrednio w `async_setup_entry`, co blokowało setup do czasu zakończenia pełnego fetchu danych (DNS + 365 requestów HTTP); zmieniono na `hass.async_create_background_task()` — setup kończy się natychmiast, dane pobierane są w tle
+
 ## [1.1.5] - 2026-04-04
 
 ### Fixed

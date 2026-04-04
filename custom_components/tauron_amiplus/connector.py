@@ -243,7 +243,11 @@ class TauronAmiplusConnector:
         session.cookie_jar.clear(lambda x: True)
         session.cookie_jar.update_cookies(cookies)
 
-        success, response = await self.validate_session(session, service)
+        try:
+            success, response = await self.validate_session(session, service)
+        except Exception as err:
+            self.log(f"SESSION VALIDATION FAILED ({service}): {err}")
+            success, response = False, None
         self.log(f"SESSION VALID ({service}): {success}")
 
         if success:

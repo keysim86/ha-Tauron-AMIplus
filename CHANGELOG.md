@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.7] - 2026-04-04
+
+### Fixed
+- `ServerDisconnectedError` podczas walidacji sesji eLicznik propagował się do koordynatora i blokował wszystkie sensory; dodano try/except w `try_restore_session()` — błąd sieci podczas walidacji jest teraz traktowany jako nieważna sesja, co skutkuje automatycznym ponownym logowaniem
+
 ## [1.1.6] - 2026-04-04
 
 ### Fixed

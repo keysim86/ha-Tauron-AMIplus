@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.9] - 2026-04-04
+
+### Fixed
+- Sensor "Należności Mój Tauron" pokazywał "nieznany" gdy brak nieopłaconych faktur (np. nadpłata); teraz wyświetla `0.0 zł` z pustą listą `payments`
+
 ## [1.1.8] - 2026-04-04
 
 ### Fixed

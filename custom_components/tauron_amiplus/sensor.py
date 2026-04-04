@@ -166,10 +166,14 @@ class TauronAmiplusSensor(SensorEntity, CoordinatorEntity):
         dataset = data.generation if self._generation else data.consumption
         self._tariff = data.tariff
 
-        if self._sensor_type == TYPE_AMOUNT_PAYMENT and data.payments and len(data.payments) > 0:
-            self._state = data.payments[0].value
-            payments = list(map(lambda p: dataclasses.asdict(p), data.payments))
-            self._params = {"date": data.payments[0].date, "payments": payments}
+        if self._sensor_type == TYPE_AMOUNT_PAYMENT and data.payments is not None:
+            if len(data.payments) > 0:
+                self._state = data.payments[0].value
+                payments = list(map(lambda p: dataclasses.asdict(p), data.payments))
+                self._params = {"date": data.payments[0].date, "payments": payments}
+            else:
+                self._state = 0.0
+                self._params = {"payments": []}
         elif self._sensor_type == TYPE_BALANCED_DAILY and data.balance_daily is not None:
             self.update_balanced_data(data.balance_daily)
         elif self._sensor_type == TYPE_BALANCED_MONTHLY and data.balance_monthly is not None:

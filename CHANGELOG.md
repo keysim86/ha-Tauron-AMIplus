@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.10] - 2026-04-05
+
+### Fixed
+- Zwiększono liczbę prób przy `ServerDisconnectedError` z 1 do 3 (opóźnienia 3s i 10s) — serwer Taurona jest na tyle niestabilny że pojedynczy retry nie wystarczał
+
 ## [1.1.9] - 2026-04-04
 
 ### Fixed

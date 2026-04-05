@@ -135,12 +135,15 @@ class TauronAmiplusConnector:
         self._storage_key = f"{STORAGE_KEY_PREFIX}_{config_entry_id}" if config_entry_id is not None else None
 
     async def get_raw_data(self) -> TauronAmiplusRawData:
-        try:
-            return await self._fetch_raw_data()
-        except ServerDisconnectedError:
-            _LOGGER.warning("[%s] Server disconnected, retrying in 5s...", self._meter_id)
-            await asyncio.sleep(5)
-            return await self._fetch_raw_data()
+        delays = [3, 10]
+        for attempt, delay in enumerate(delays):
+            try:
+                return await self._fetch_raw_data()
+            except ServerDisconnectedError:
+                _LOGGER.warning("[%s] Server disconnected, retrying in %ds (attempt %d/%d)...",
+                                self._meter_id, delay, attempt + 1, len(delays) + 1)
+                await asyncio.sleep(delay)
+        return await self._fetch_raw_data()
 
     async def _fetch_raw_data(self) -> TauronAmiplusRawData:
         data = TauronAmiplusRawData()

@@ -63,6 +63,7 @@ TYPE_AMOUNT = "moj_tauron"
 TYPE_AMOUNT_PAYMENT = f"{TYPE_AMOUNT}_PAYMENT"
 
 DEFAULT_UPDATE_INTERVAL = timedelta(hours=8, minutes=30)
+RETRY_INTERVALS = [timedelta(minutes=5), timedelta(minutes=15), timedelta(minutes=30)]
 SENSOR_TYPES_YAML = {
     TYPE_CONSUMPTION_READING: {
         "name": "Odczyt licznika (pobór)",

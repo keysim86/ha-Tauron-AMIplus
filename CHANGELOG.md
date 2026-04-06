@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.11] - 2026-04-06
+## [Unreleased]
 
 ### Added
 - Automatyczny retry gdy dane są niekompletne (jakikolwiek sensor pokazałby "niedostępny"/"nieznany"): kolejne próby po 5 min, 15 min i 30 min zamiast czekania 8,5h do następnego normalnego odświeżenia. Po 3 nieudanych próbach integracja wraca do normalnego harmonogramu. Dotyczy pól: `json_daily`, `json_monthly`, `json_yearly`, `json_reading`.

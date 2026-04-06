@@ -154,6 +154,8 @@ Then restart Home Assistant before applying configuration file changes.
   This timer is restarted after: HA restart, integration reload, configuration change.
   Additionally, a new pack of data is freshly downloaded when user retrieves diagnostics data.
 
+  If after an update any core sensor would show as unavailable or unknown (missing daily, monthly, yearly or meter reading data), the integration automatically retries after **5 min**, then **15 min**, then **30 min** before falling back to the normal 8.5h schedule.
+
 * **How to get energy meter id?**
   
   To find out value for `energy_meter_id` follow [these steps](https://github.com/PiotrMachowski/Home-Assistant-custom-components-Tauron-AMIplus/issues/105#issuecomment-1413675239).

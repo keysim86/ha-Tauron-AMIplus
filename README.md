@@ -1,187 +1,126 @@
-[![HACS Default][hacs_shield]][hacs]
 [![GitHub Latest Release][releases_shield]][latest_release]
 [![GitHub All Releases][downloads_total_shield]][releases]
 [![Installations][installations_shield]][releases]
-
-
-
-
+[![HACS Default][hacs_shield]][hacs]
 
 [hacs_shield]: https://img.shields.io/static/v1.svg?label=HACS&message=Default&style=popout&color=green&labelColor=41bdf5&logo=HomeAssistantCommunityStore&logoColor=white
 [hacs]: https://hacs.xyz/docs/default_repositories
-
 [latest_release]: https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest
 [releases_shield]: https://img.shields.io/github/release/keysim86/ha-Tauron-AMIplus.svg?style=popout
-
 [releases]: https://github.com/keysim86/ha-Tauron-AMIplus/releases
 [downloads_total_shield]: https://img.shields.io/github/downloads/keysim86/ha-Tauron-AMIplus/total
-
 [installations_shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.tauron_amiplus.total&style=popout&color=41bdf5&label=analytics
 
+# Tauron AMIplus
 
-# Tauron AMIplus sensor
+Integracja do Home Assistant pobierająca dane o zużyciu i oddaniu energii elektrycznej z serwisu [eLicznik Tauron](https://elicznik.tauron-dystrybucja.pl) oraz należności z [Mój Tauron](https://moj.tauron.pl).
 
-This sensor uses unofficial API to get energy usage and generation data from [*TAURON eLicznik*](https://elicznik.tauron-dystrybucja.pl).
+## Sensory
 
-## Configuration
+### Pobór energii
 
-### Config flow (recommended)
+| Sensor | Opis |
+|--------|------|
+| Odczyt licznika (pobór) | Aktualny stan licznika poboru w kWh |
+| Zużycie energii dobowe | Zużycie za poprzedni dzień |
+| Zużycie energii miesięczne | Zużycie w bieżącym miesiącu |
+| Zużycie energii roczne | Zużycie w bieżącym roku |
+| Zużycie energii ostatnie 12 miesięcy | Zużycie za ostatnie 12 miesięcy |
+| Zużycie energii (konfigurowalne) | Zużycie od wybranej daty |
 
-To configure this integration go to: _Configuration_ -> _Integrations_ -> _Add integration_ -> _Tauron AMIplus_.
+### Oddanie energii (prosument)
 
-You can also use following [My Home Assistant](http://my.home-assistant.io/) link:
+Włączane opcjonalnie w ustawieniach integracji.
 
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tauron_amiplus)
+| Sensor | Opis |
+|--------|------|
+| Odczyt licznika (oddanie) | Aktualny stan licznika oddania w kWh |
+| Oddanie energii dobowe | Oddanie za poprzedni dzień |
+| Oddanie energii miesięczne | Oddanie w bieżącym miesiącu |
+| Oddanie energii roczne | Oddanie w bieżącym roku |
+| Oddanie energii ostatnie 12 miesięcy | Oddanie za ostatnie 12 miesięcy |
+| Oddanie energii (konfigurowalne) | Oddanie od wybranej daty |
 
-### Manual - yaml
+### Bilans (prosument)
 
+Włączane opcjonalnie w ustawieniach integracji.
 
-<details>
-<summary>Warning: yaml configuration is no longer recommended</summary>
+| Sensor | Opis |
+|--------|------|
+| Bilans dobowy | Bilans poboru i oddania za poprzedni dzień |
+| Bilans miesięczny | Bilans w bieżącym miesiącu |
+| Bilans roczny | Bilans w bieżącym roku |
+| Bilans ostatnie 12 miesięcy | Bilans za ostatnie 12 miesięcy |
+| Bilans (konfigurowalny) | Bilans od wybranej daty |
 
+### Mój Tauron
 
-**Warning:** Not all features are available when using yaml configuration
+Włączane opcjonalnie w ustawieniach integracji.
 
-| Key                   | Type     | Required | Default          | Description                                                                    |
-|-----------------------|----------|----------|------------------|--------------------------------------------------------------------------------|
-| `name`                | `string` | `False`  | `Tauron AMIPlus` | Name of sensor                                                                 |
-| `username`            | `string` | `True`   | -                | Username used to login at [*eLicznik*](https://elicznik.tauron-dystrybucja.pl) |
-| `password`            | `string` | `True`   | -                | Password used to login at [*eLicznik*](https://elicznik.tauron-dystrybucja.pl) |
-| `energy_meter_id`     | `string` | `True`   | -                | ID of energy meter                                                             |
-| `monitored_variables` | `list`   | `True`   | -                | List of variables to monitor                                                   |
+| Sensor | Opis |
+|--------|------|
+| Należności Mój Tauron | Kwota najbliższej nieopłaconej faktury w PLN. `0.0 zł` gdy brak zaległości (nadpłata). Atrybut `payments` zawiera pełną listę oczekujących płatności z terminami. |
 
-#### Possible monitored conditions
+## Instalacja
 
-| Key                          | Description                                      |
-|------------------------------|--------------------------------------------------| 
-| `consumption_reading`        | Current consumption reading of a meter           |
-| `consumption_daily`          | Daily energy consumption **(for previous day!)** |
-| `consumption_monthly`        | Monthly energy consumption                       |
-| `consumption_yearly`         | Yearly energy consumption                        |
-| `consumption_last_12_months` | Total energy consumption for last 12 months      |
-| `generation_reading`         | Current generation reading of a meter            |
-| `generation_daily`           | Daily energy generation **(for previous day!)**  |
-| `generation_monthly`         | Monthly energy generation                        |
-| `generation_yearly`          | Yearly energy generation                         |
-| `generation_last_12_months`  | Total energy generation for last 12 months       |
-| `balanced_daily`             | Daily balance **(for previous day!)**            |
-| `balanced_monthly`           | Monthly balance                                  |
-| `balanced_yearly`            | Yearly balance                                   |
-| `balanced_last_12_months`    | Balance for last 12 months                       |
+### HACS (zalecane)
 
-#### Example usage
+[![Otwórz w HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=keysim86&repository=ha-Tauron-AMIplus&category=integration)
 
-```
-sensor:
-  - platform: tauron_amiplus
-    name: Tauron AMIPlus
-    username: !secret tauron_amiplus.username
-    password: !secret tauron_amiplus.password
-    energy_meter_id: !secret tauron_amiplus.energy_meter_id
-    monitored_variables:
-      - consumption_reading
-      - consumption_daily
-      - consumption_monthly
-      - consumption_yearly
-      - consumption_last_12_months
-      - generation_reading
-      - generation_daily
-      - generation_monthly
-      - generation_yearly
-      - generation_last_12_months
-      - balanced_daily
-      - balanced_monthly
-      - balanced_yearly
-      - balanced_last_12_months
-```
+1. Otwórz HACS → **Integracje**
+2. Kliknij ⋮ → **Własne repozytoria**
+3. Wpisz `keysim86/ha-Tauron-AMIplus`, kategoria: **Integracja**
+4. Zainstaluj **Tauron AMIplus**
+5. Uruchom ponownie Home Assistant
 
+### Ręczna
 
-</details>
+Pobierz [tauron_amiplus.zip](https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest/download/tauron_amiplus.zip) i rozpakuj do katalogu `config/custom_components/tauron_amiplus`, następnie zrestartuj Home Assistant.
 
+## Konfiguracja
 
-## Installation
+Przejdź do: **Ustawienia → Urządzenia i usługi → Dodaj integrację → Tauron AMIplus**
 
+[![Dodaj integrację](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tauron_amiplus)
 
-<table><tr><th>Since v2.3.0 this integration requires Home Assistant version 2022.12 or latter</th></tr></table>
-<table><tr><th>Since v2.4.8 this integration might cause slow starts of Home Assistant</th></tr></table>
+W kreatorze podaj:
+- Login i hasło do konta eLicznik
+- Wybierz licznik z listy (integracja pobiera je automatycznie)
 
+Po dodaniu wejdź w **Konfiguruj** aby włączyć opcjonalne sensory (generacja, bilans, Mój Tauron, sensor konfigurowalny).
 
-### Using [HACS](https://hacs.xyz/) (recommended)
+## Częstotliwość odświeżania
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=keysim86&repository=ha-Tauron-AMIplus&category=integration)
+Dane są pobierane co **8,5 godziny**. Jeśli po odświeżeniu jakikolwiek sensor byłby niedostępny lub nieznany (brakujące dane dobowe, miesięczne, roczne lub odczyt licznika), integracja automatycznie ponawia próbę po **5 min**, następnie **15 min** i **30 min**. Po 3 nieudanych próbach wraca do normalnego harmonogramu.
 
-* In _Integrations_ section add repository "Tauron AMIplus"
-* Install added repository
- 
-### Manual
-
-Download [*tauron_amiplus.zip*](https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest/download/tauron_amiplus.zip) and extract its contents to `config/custom_components/tauron_amiplus` directory:
-```bash
-mkdir -p custom_components/tauron_amiplus
-cd custom_components/tauron_amiplus
-wget https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest/download/tauron_amiplus.zip
-unzip tauron_amiplus.zip
-rm tauron_amiplus.zip
-```
-
-Then restart Home Assistant before applying configuration file changes.
+Odświeżenie następuje też po:
+- restarcie Home Assistant
+- przeładowaniu integracji
+- zmianie konfiguracji
 
 ## FAQ
 
-* **How to display hourly data in Energy dashboard?**
+**Dlaczego sensory dobowe pokazują dane z poprzedniego dnia?**
 
-  To show hourly data in Energy dashboard you have to use `tauron_importer` statistics instead of entities.
+eLicznik udostępnia dane z opóźnieniem — dane za dany dzień pojawiają się dopiero następnego dnia.
 
-* **Why there are missing days in statistics/Energy dashboard?**
+**Jak wyświetlić dane godzinowe w panelu Energii?**
 
-  Such gaps appear when there are missing values in hourly readings for this day.
-  You can confirm it using [eLicznik website](https://elicznik.tauron-dystrybucja.pl).
-  
-* **How to fix missing data in statistics/Energy dashboard?**
+W ustawieniach integracji włącz opcję **Zapisuj statystyki godzinowe**. Następnie w panelu Energii wybierz encje statystyk (`tauron_importer.*`) zamiast sensorów.
 
-  Once the data appears on [eLicznik website](https://elicznik.tauron-dystrybucja.pl) can fill such gaps using `tauron_amiplus.download_statistics` service.
+**Skąd pobrać ID licznika?**
 
-* **What is the "Należności Mój Tauron" sensor?**
+ID licznika (`energy_meter_id`) jest wybierane automatycznie z listy podczas konfiguracji przez UI.
 
-  When enabled in integration options, this sensor fetches unpaid invoices from [mój.tauron.pl](https://moj.tauron.pl).
-  The sensor value is the amount of the first (nearest) unpaid invoice in PLN.
-  The `payments` attribute contains the full list of all pending payments with their due dates.
-  Enable it via: _Settings_ → _Integrations_ → _Tauron AMIplus_ → _Configure_ → **Pokaż sensor należności (Mój Tauron)**.
+**Co oznacza sensor "Należności Mój Tauron"?**
 
-* **When does this integration update data?**
+Sensor pobiera informacje o nieopłaconych fakturach z [mój.tauron.pl](https://moj.tauron.pl). Wartość to kwota najbliższej faktury w PLN. Przy braku zaległości (np. nadpłata) sensor wyświetla `0.0 zł`.
 
-  This integration logs in and downloads data from eLicznik website every 8.5h.
-  This timer is restarted after: HA restart, integration reload, configuration change.
-  Additionally, a new pack of data is freshly downloaded when user retrieves diagnostics data.
+**Co zrobić gdy w statystykach brakuje dni?**
 
-  If after an update any core sensor would show as unavailable or unknown (missing daily, monthly, yearly or meter reading data), the integration automatically retries after **5 min**, then **15 min**, then **30 min** before falling back to the normal 8.5h schedule.
+Luki pojawiają się gdy eLicznik nie ma danych dla danego dnia (np. błąd odczytu licznika). Po ich uzupełnieniu na stronie eLicznik można wypełnić luki usługą `tauron_amiplus.download_statistics`.
 
-* **How to get energy meter id?**
-  
-  To find out value for `energy_meter_id` follow [these steps](https://github.com/PiotrMachowski/Home-Assistant-custom-components-Tauron-AMIplus/issues/105#issuecomment-1413675239).
-  
-* **How to calculate available energy as a prosument?**
+## Wymagania
 
-  To calculate available energy you can use following config:
-  ```yaml
-  input_number:
-    initial_energy_bank:
-      min: 0
-      max: 100000000
-      step: 1
-      mode: box
-  template:
-    - sensor:
-        - name: Tauron energy bank
-          state_class: total
-          device_class: energy
-          unique_id: tauron_energy_bank
-          icon: mdi:home-battery-outline
-          state: "{{ (states('input_number.initial_energy_bank') | float(0) + states('sensor.tauron_amiplus_123_yearly_energy_generation') | float(0) * 0.8 - states('sensor.tauron_amiplus_123_yearly_energy_consumption') | float(0)) | round(3) }}"
-          unit_of_measurement: "kWh"
-          availability: "{{ states('sensor.tauron_amiplus_123_yearly_energy_generation') | is_number and states('sensor.tauron_amiplus_123_yearly_energy_consumption') | is_number }}"
-  ```
-
-
-
-
+- Home Assistant 2022.12+
+- HACS 1.34.0+

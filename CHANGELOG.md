@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.12-beta.2] - 2026-05-28
+
+### Fixed
+- `connector.py`: `try_restore_session` — brak timeoutu na sesji aiohttp powodował że requesty wisiały minutami zanim serwer Taurona sam zerwał połączenie (`ServerDisconnectedError`); dodano `ClientTimeout(total=60)` — teraz każdy request ma maksymalnie 60s, po czym rzuca `asyncio.TimeoutError`
+- `connector.py`: `get_raw_data` — retry łapał tylko `ServerDisconnectedError`; dodano też `asyncio.TimeoutError` żeby timeout sesji był prawidłowo obsługiwany przez mechanizm retry
+
 ## [1.1.12-beta.1] - 2026-05-28
 
 ### Fixed

@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional, Tuple, Any
 
-from aiohttp import ClientSession, ServerDisconnectedError
+from aiohttp import ClientSession, ClientTimeout, ServerDisconnectedError
 from bs4 import BeautifulSoup
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
@@ -139,7 +139,7 @@ class TauronAmiplusConnector:
         for attempt, delay in enumerate(delays):
             try:
                 return await self._fetch_raw_data()
-            except ServerDisconnectedError:
+            except (ServerDisconnectedError, asyncio.TimeoutError):
                 _LOGGER.warning("[%s] Server disconnected, retrying in %ds (attempt %d/%d)...",
                                 self._meter_id, delay, attempt + 1, len(delays) + 1)
                 await asyncio.sleep(delay)
@@ -248,7 +248,7 @@ class TauronAmiplusConnector:
         return session, login_response_text
 
     async def try_restore_session(self, service: str) -> (bool, str | None, ClientSession):
-        session = async_create_clientsession(self._hass)
+        session = async_create_clientsession(self._hass, timeout=ClientTimeout(total=60))
         if self._storage_key is None or self._hass is None:
             self.log("NO SESSION TO RESTORE ({service})")
             return False, None, session
@@ -276,7 +276,7 @@ class TauronAmiplusConnector:
             self.log(f"INVALID SESSION RESPONSE ({service})")
             self.log(response)
             await store.async_save({})
-            session_to_return = async_create_clientsession(self._hass)
+            session_to_return = async_create_clientsession(self._hass, timeout=ClientTimeout(total=60))
         return success, response, session_to_return
 
     async def store_session(self, session: ClientSession, service: str) -> None:

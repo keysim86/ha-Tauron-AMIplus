@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.12-beta.3] - 2026-05-28
+
+### Fixed
+- `connector.py`: timeout sesji ustawiony przy tworzeniu przez `async_create_clientsession` jest ignorowany przez HA; dodano `timeout=ClientTimeout(total=30)` bezpośrednio do każdego wywołania `session.request()` / `session.get()` (validate_session, login GET, login POST, select meter POST, execute_post POST)
+
 ## [1.1.12-beta.2] - 2026-05-28
 
 ### Fixed

@@ -209,6 +209,7 @@ class TauronAmiplusConnector:
             f"{login_url}?service={service}",
             headers=CONST_REQUEST_HEADERS,
             allow_redirects=True,
+            timeout=ClientTimeout(total=30),
         )
         login_page_text = await login_page_response.text()
         self.log(f"LOGIN PAGE STATUS: {login_page_response.status}")
@@ -231,6 +232,7 @@ class TauronAmiplusConnector:
             data=payload_login,
             headers=CONST_REQUEST_HEADERS,
             allow_redirects=True,
+            timeout=ClientTimeout(total=30),
         )
         login_response_text = await login_response.text()
         self.log(f"LOGIN RESPONSE STATUS: {login_response.status}")
@@ -290,7 +292,7 @@ class TauronAmiplusConnector:
         await store.async_save({"cookies": cookies})
 
     async def validate_session(self, session: ClientSession, service: str) -> (bool, str):
-        response = await session.get(service)
+        response = await session.get(service, timeout=ClientTimeout(total=30))
         response_text = await response.text()
         return self._username in response_text or self._username.upper() in response_text.upper(), response_text
 
@@ -306,7 +308,7 @@ class TauronAmiplusConnector:
         else:
             self._is_business = False
         self.log(f"Selecting meter: {self._meter_id}")
-        select_response = await self._session.request("POST", CONST_URL_SELECT_METER, data=payload_select_meter, headers=CONST_REQUEST_HEADERS)
+        select_response = await self._session.request("POST", CONST_URL_SELECT_METER, data=payload_select_meter, headers=CONST_REQUEST_HEADERS, timeout=ClientTimeout(total=30))
         select_response_text = await select_response.text()
         tariff_search = re.findall(r"[^_]Tariff: '(.*)',", select_response_text)
         if len(tariff_search) > 0:
@@ -495,6 +497,7 @@ class TauronAmiplusConnector:
             url,
             data=payload,
             headers=CONST_REQUEST_HEADERS,
+            timeout=ClientTimeout(total=30),
         )
         response_text = await response.text()
         self.log(f"RESPONSE: {response_text}")

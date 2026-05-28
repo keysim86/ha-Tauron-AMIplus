@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.12-beta.1] - 2026-05-28
+
+### Fixed
+- `connector.py`: `login_service` — Tauron przeszedł na Keycloak SSO; stary flow (2x POST na stały URL z `service` w payloadzie) przestał działać; nowy flow: (1) GET strony logowania, (2) regex wyciąga URL formularza `kc-form-login`, (3) POST credentials (`username`, `password`, `credentialId=""`) do tego URL z `allow_redirects=True`; zmieniono też detekcję błędnych danych logowania (ze sprawdzania tekstu na obecność formularza `kc-form-login` w odpowiedzi)
+
 ## [1.1.11] - 2026-04-06
 
 ### Added

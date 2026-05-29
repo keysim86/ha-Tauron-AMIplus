@@ -133,6 +133,7 @@ class TauronAmiplusConnector:
         self._cache = DailyDataCache(meter_id)
         self._hass = hass
         self._storage_key = f"{STORAGE_KEY_PREFIX}_{config_entry_id}" if config_entry_id is not None else None
+        self._request_semaphore = asyncio.Semaphore(3)
 
     async def get_raw_data(self) -> TauronAmiplusRawData:
         delays = [3, 10]
@@ -492,14 +493,15 @@ class TauronAmiplusConnector:
 
     async def execute_post(self, url: str, payload: dict):
         self.log(f"EXECUTING: {url} with payload: {payload}")
-        response = await self._session.request(
-            "POST",
-            url,
-            data=payload,
-            headers=CONST_REQUEST_HEADERS,
-            timeout=ClientTimeout(total=30),
-        )
-        response_text = await response.text()
+        async with self._request_semaphore:
+            response = await self._session.request(
+                "POST",
+                url,
+                data=payload,
+                headers=CONST_REQUEST_HEADERS,
+                timeout=ClientTimeout(total=30),
+            )
+            response_text = await response.text()
         self.log(f"RESPONSE: {response_text}")
         if "Przekroczono maksymalną liczbę logowań." in response_text:
             self.log("Too many login attempts")

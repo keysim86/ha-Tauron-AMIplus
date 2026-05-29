@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.12-beta.4] - 2026-05-30
+
+### Fixed
+- `connector.py`: `ServerDisconnectedError` przy pobieraniu danych spowodowany zbyt dużą liczbą równoległych requestów; `asyncio.gather` w `get_raw_values_daily_for_range` tworzy do ~120 równoległych połączeń jednocześnie (30 dni × 2 zakresy × 2 datasety); dodano `asyncio.Semaphore(3)` w `execute_post` limitujący maksymalnie 3 równoległe requesty do serwera Taurona
+
 ## [1.1.12-beta.3] - 2026-05-28
 
 ### Fixed

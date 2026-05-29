@@ -1,25 +1,11 @@
 # Changelog
 
-## [1.1.12-beta.4] - 2026-05-30
+## [1.1.12] - 2026-05-30
 
 ### Fixed
-- `connector.py`: `ServerDisconnectedError` przy pobieraniu danych spowodowany zbyt dużą liczbą równoległych requestów; `asyncio.gather` w `get_raw_values_daily_for_range` tworzy do ~120 równoległych połączeń jednocześnie (30 dni × 2 zakresy × 2 datasety); dodano `asyncio.Semaphore(3)` w `execute_post` limitujący maksymalnie 3 równoległe requesty do serwera Taurona
-
-## [1.1.12-beta.3] - 2026-05-28
-
-### Fixed
-- `connector.py`: timeout sesji ustawiony przy tworzeniu przez `async_create_clientsession` jest ignorowany przez HA; dodano `timeout=ClientTimeout(total=30)` bezpośrednio do każdego wywołania `session.request()` / `session.get()` (validate_session, login GET, login POST, select meter POST, execute_post POST)
-
-## [1.1.12-beta.2] - 2026-05-28
-
-### Fixed
-- `connector.py`: `try_restore_session` — brak timeoutu na sesji aiohttp powodował że requesty wisiały minutami zanim serwer Taurona sam zerwał połączenie (`ServerDisconnectedError`); dodano `ClientTimeout(total=60)` — teraz każdy request ma maksymalnie 60s, po czym rzuca `asyncio.TimeoutError`
-- `connector.py`: `get_raw_data` — retry łapał tylko `ServerDisconnectedError`; dodano też `asyncio.TimeoutError` żeby timeout sesji był prawidłowo obsługiwany przez mechanizm retry
-
-## [1.1.12-beta.1] - 2026-05-28
-
-### Fixed
-- `connector.py`: `login_service` — Tauron przeszedł na Keycloak SSO; stary flow (2x POST na stały URL z `service` w payloadzie) przestał działać; nowy flow: (1) GET strony logowania, (2) regex wyciąga URL formularza `kc-form-login`, (3) POST credentials (`username`, `password`, `credentialId=""`) do tego URL z `allow_redirects=True`; zmieniono też detekcję błędnych danych logowania (ze sprawdzania tekstu na obecność formularza `kc-form-login` w odpowiedzi)
+- `connector.py`: Tauron przeszedł na Keycloak SSO — stary flow logowania przestał działać; nowy flow: (1) GET strony logowania, (2) regex wyciąga URL formularza `kc-form-login`, (3) POST credentials do tego URL z `allow_redirects=True`
+- `connector.py`: timeout sesji ustawiony przez `async_create_clientsession` jest ignorowany przez HA; dodano `ClientTimeout(total=30)` bezpośrednio do każdego `session.request()` / `session.get()`
+- `connector.py`: `ServerDisconnectedError` spowodowany zbyt dużą liczbą równoległych requestów — `asyncio.gather` w `get_raw_values_daily_for_range` tworzył do ~120 równoległych połączeń jednocześnie; dodano `asyncio.Semaphore(3)` w `execute_post` limitujący maksymalnie 3 równoległe requesty do serwera Taurona
 
 ## [1.1.11] - 2026-04-06
 

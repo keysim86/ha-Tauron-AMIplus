@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.13] - 2026-10-08
 
 ### Fixed
 - `services.py`: zgodność z Home Assistant 2026.10 — usługi `download_statistics` i `clear_cache` czytały

@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- `services.py`: zgodność z Home Assistant 2026.10 — usługi `download_statistics` i `clear_cache` czytały
+  `DeviceEntry.config_entries`, co od 2026.10 loguje ostrzeżenie o wycofaniu (przestanie działać w 2027.10).
+  Teraz wpis konfiguracji z `DeviceEntry.config_entry_id`, a na starszych HA (bez tego pola) jak dotąd
+  z `config_entries`; brana jest zawsze pozycja tej integracji. Nieznane urządzenie albo urządzenie innej
+  integracji — błąd w logu zamiast wyjątku.
+
 ## [1.1.12] - 2026-05-30
 
 ### Fixed

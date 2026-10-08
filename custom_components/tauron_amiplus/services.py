@@ -19,6 +19,26 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
+def _config_entry_for_device(hass: HomeAssistant, device_id: str) -> TauronAmiplusConfigEntry | None:
+    """Wpis konfiguracji Tauron AMIplus urządzenia z wywołania usługi.
+
+    Od HA 2026.10 odczyt `DeviceEntry.config_entries` loguje ostrzeżenie (koniec w 2027.10) —
+    nowsze HA mają `config_entry_id`; starsze (hacs.json: od 2022.12) tylko `config_entries`.
+    """
+    device = dr.async_get(hass).async_get(device_id)
+    if device is None:
+        _LOGGER.error(f"Unknown device: {device_id}")
+        return None
+    entry_id = getattr(device, "config_entry_id", None)
+    entry_ids = [entry_id] if entry_id is not None else list(device.config_entries)
+    for i in entry_ids:
+        entry = hass.config_entries.async_get_entry(i)
+        if entry is not None and entry.domain == DOMAIN:
+            return entry
+    _LOGGER.error(f"Device {device_id} does not belong to {DOMAIN}")
+    return None
+
+
 class DownloadStatisticsService:
 
     domain = DOMAIN
@@ -32,15 +52,14 @@ class DownloadStatisticsService:
         self._hass = hass
 
     async def async_handle_service(self, call: ServiceCall) -> None:
-        device_registry = dr.async_get(self._hass)
         now = datetime.date.today()
         start_date = call.data["start_date"]
         if start_date > now:
             _LOGGER.error(f"Failed to download statistics, date from the future: {start_date}")
             return
-        device = device_registry.async_get(call.data["device_id"])
-        [config_entry_id, *_] = device.config_entries
-        config_entry = self._hass.config_entries.async_get_entry(config_entry_id)
+        config_entry = _config_entry_for_device(self._hass, call.data["device_id"])
+        if config_entry is None:
+            return
         await TauronAmiplusStatisticsUpdater.manually_update(self._hass, start_date, config_entry)
 
 
@@ -56,10 +75,9 @@ class ClearCacheService:
         self._hass = hass
 
     async def async_handle_service(self, call: ServiceCall) -> None:
-        device_registry = dr.async_get(self._hass)
-        device = device_registry.async_get(call.data["device_id"])
-        [config_entry_id, *_] = device.config_entries
-        config_entry: TauronAmiplusConfigEntry = self._hass.config_entries.async_get_entry(config_entry_id)
+        config_entry = _config_entry_for_device(self._hass, call.data["device_id"])
+        if config_entry is None:
+            return
         config_entry.runtime_data.coordinator.connector.clear_cache()
 
 

@@ -8,6 +8,9 @@
   Teraz wpis konfiguracji z `DeviceEntry.config_entry_id`, a na starszych HA (bez tego pola) jak dotąd
   z `config_entries`; brana jest zawsze pozycja tej integracji. Nieznane urządzenie albo urządzenie innej
   integracji — błąd w logu zamiast wyjątku.
+- `manifest.json`: hassfest odrzucał wymagania — `requests` jest zależnością samego Home Assistant (integracja
+  i tak go nie używa), a przypięte `beautifulsoup4==4.12.3` kłóciło się z `4.13.3` z zależności HA. Teraz tylko
+  `beautifulsoup4>=4.12.3`.
 
 ## [1.1.12] - 2026-05-30
 

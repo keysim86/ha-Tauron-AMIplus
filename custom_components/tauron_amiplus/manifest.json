@@ -12,8 +12,7 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/keysim86/ha-Tauron-AMIplus/issues",
   "requirements": [
-    "requests",
-    "beautifulsoup4==4.12.3"
+    "beautifulsoup4>=4.12.3"
   ],
   "version": "1.1.12"
 }

@@ -173,7 +173,7 @@ class TauronAmiplusConnector:
         self.log(f"Restored daily data cache: {self._cache.size()}")
 
     def _save_cache(self) -> None:
-        if self._cache_store is not None:
+        if self._cache_store is not None and self._cache.dirty:
             self._cache_store.async_delay_save(self._cache.to_dict, CACHE_SAVE_DELAY)
 
     @staticmethod
@@ -624,6 +624,7 @@ class DailyDataCache:
         self._generation_data = dict()
         self._max_date = datetime.datetime.now() + datetime.timedelta(days=1)
         self._meter_id = meter_id
+        self.dirty = False
 
     def __contains__(self, item: Tuple[str, bool]):
         date_str, generation = item
@@ -639,6 +640,7 @@ class DailyDataCache:
             self._generation_data[date_str] = value
         else:
             self._consumption_data[date_str] = value
+        self.dirty = True
         if self._max_date is None or self._max_date > date:
             self._max_date = date
 
@@ -661,8 +663,10 @@ class DailyDataCache:
         self.log(f"Deleting data from cache for day: {date_str}")
         if date_str in self._generation_data:
             self._generation_data.pop(date_str)
+            self.dirty = True
         if date_str in self._consumption_data:
             self._consumption_data.pop(date_str)
+            self.dirty = True
 
     def clear(self) -> None:
         self.log(
@@ -670,6 +674,7 @@ class DailyDataCache:
         )
         self._generation_data.clear()
         self._consumption_data.clear()
+        self.dirty = True
 
     def size(self) -> str:
         return f"consumption - {len(self._consumption_data)}, generation - {len(self._generation_data)}"
@@ -684,6 +689,7 @@ class DailyDataCache:
         def slim(value):
             day = value.get("data") or {}
             return json.dumps({"data": {k: day[k] for k in self._STORED_FIELDS if k in day}}, separators=(",", ":"))
+        self.dirty = False
         return {"consumption": {d: slim(v) for d, v in self._consumption_data.items()},
                 "generation": {d: slim(v) for d, v in self._generation_data.items()}}
 
@@ -711,6 +717,7 @@ class DailyDataCache:
                 for d, v in days.items():
                     if isinstance(d, str) and (parsed := self._parse_day(v)) is not None:
                         target[d] = parsed
+        self.dirty = False
         dates = [*self._consumption_data, *self._generation_data]
         if dates:
             try:

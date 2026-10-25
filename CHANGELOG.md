@@ -4,8 +4,8 @@
 
 ### Changed
 - `connector.py`: pamięć podręczna dni z kompletem danych godzinowych jest zapisywana na dysk
-  (`.storage/tauron_amiplus_daily_cache_<wpis>`, zapis 30 s po każdym udanym pobraniu, z kopii — serializacja
-  idzie w osobnym wątku). Wcześniej żyła tylko w pamięci, więc każdy restart Home Assistant pobierał od nowa
+  (`.storage/tauron_amiplus_daily_cache_<wpis>`, zapis 30 s po udanym pobraniu i tylko gdy przybył albo ubył
+  dzień, z kopii — serializacja idzie w osobnym wątku). Wcześniej żyła tylko w pamięci, więc każdy restart Home Assistant pobierał od nowa
   dane dzień po dniu (przy 12 miesiącach i zakresie konfigurowalnym ponad tysiąc zapytań, kilka minut bez
   wartości w sensorach). Na dysk idą tylko pola czytane przy sumowaniu zakresu (`allData`, `sum`, `zones`,
   `zonesName`, `tariff`) — pola wykresów (`values`, `chartZones`, `labels`…) potrzebne są tylko przy świeżym

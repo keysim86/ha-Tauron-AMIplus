@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.15] - 2026-10-25
 
 ### Changed
 - `connector.py`: pamięć podręczna dni z kompletem danych godzinowych jest zapisywana na dysk

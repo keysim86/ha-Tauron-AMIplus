@@ -91,8 +91,14 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: TauronAmiplusConf
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
     config_entry.async_on_unload(config_entry.add_update_listener(async_reload_entry))
     register_all_services(hass)
-    hass.async_create_background_task(
-        tauron_amiplus_update_coordinator.async_request_refresh(),
+    # async_refresh(), nie async_request_refresh(): to drugie idzie przez Debouncer koordynatora, który
+    # odpala odświeżanie we własnym, ZWYKŁYM zadaniu -- Home Assistant czeka na nie przy starcie do 5 minut
+    # ("Setup timed out for bootstrap waiting on ... debouncer cooldown=10"), mimo opakowania w zadanie w tle.
+    # Pierwsze odświeżanie po restarcie pobiera dane godzinowe dzień po dniu (pusta pamięć podręczna) i trwa minuty.
+    # Zadanie w tle wpisu jest anulowane przy jego wyładowaniu.
+    config_entry.async_create_background_task(
+        hass,
+        tauron_amiplus_update_coordinator.async_refresh(),
         "tauron_amiplus_initial_refresh",
     )
     return True

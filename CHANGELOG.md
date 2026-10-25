@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- `__init__.py`: integracja blokowała start Home Assistant na 5 minut ("Something is blocking Home Assistant
+  from wrapping up the start up phase", w logu `Setup timed out for bootstrap waiting on ... debouncer
+  cooldown=10, immediate=True`). Pierwsze odświeżanie szło przez `async_request_refresh()`, a Debouncer
+  koordynatora uruchamia je we własnym zwykłym zadaniu, na które HA czeka przy starcie — opakowanie w zadanie
+  w tle nie pomagało. Po restarcie pamięć podręczna dni jest pusta, więc to odświeżanie pobiera dane godzinowe
+  dzień po dniu i trwa minuty. Teraz `async_refresh()` bezpośrednio w zadaniu w tle wpisu
+  (`config_entry.async_create_background_task`, anulowane przy wyładowaniu wpisu).
+
 ## [1.1.13] - 2026-10-08
 
 ### Fixed

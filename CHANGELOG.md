@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.14] - 2026-10-25
 
 ### Fixed
 - `__init__.py`: integracja blokowała start Home Assistant na 5 minut ("Something is blocking Home Assistant

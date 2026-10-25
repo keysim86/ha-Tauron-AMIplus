@@ -1,7 +1,7 @@
 """Update coordinator for TAURON sensors."""
 import asyncio
-import copy
 import datetime
+import json
 import logging
 import re
 from dataclasses import dataclass
@@ -227,7 +227,7 @@ class TauronAmiplusConnector:
             end = datetime.datetime.now()
             start = datetime.datetime.combine(self._show_configurable_date, end.time())
             dataset.json_configurable_hourly = await self.get_raw_values_daily_for_range(start, end, generation)
-            potential_max = end - datetime.timedelta(days=2)
+            potential_max = start - datetime.timedelta(days=2)
             if potential_max < cache_max:
                 cache_max = potential_max
         return dataset, cache_max
@@ -674,9 +674,33 @@ class DailyDataCache:
     def size(self) -> str:
         return f"consumption - {len(self._consumption_data)}, generation - {len(self._generation_data)}"
 
+    # What get_raw_values_daily_for_range reads from a cached day; the chart fields (values, chartZones, labels...)
+    # are only used by add_all_data on a fresh download.
+    _STORED_FIELDS = ("allData", "sum", "zones", "zonesName", "tariff")
+
     def to_dict(self) -> dict:
-        # A copy: the store serializes it in an executor thread while the event loop may keep adding days.
-        return copy.deepcopy({"consumption": self._consumption_data, "generation": self._generation_data})
+        # Each day as compact JSON text: the store writes the file indented, which would double its size. Text is
+        # also a copy, so the executor thread serializing it never sees days the event loop is still adding.
+        def slim(value):
+            day = value.get("data") or {}
+            return json.dumps({"data": {k: day[k] for k in self._STORED_FIELDS if k in day}}, separators=(",", ":"))
+        return {"consumption": {d: slim(v) for d, v in self._consumption_data.items()},
+                "generation": {d: slim(v) for d, v in self._generation_data.items()}}
+
+    @staticmethod
+    def _parse_day(value):
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except ValueError:
+                return None
+        return value if DailyDataCache._is_valid_day(value) else None
+
+    @staticmethod
+    def _is_valid_day(value) -> bool:
+        day = value.get("data") if isinstance(value, dict) else None
+        return (isinstance(day, dict) and isinstance(day.get("allData"), list) and "sum" in day
+                and isinstance(day.get("zones"), dict) and isinstance(day.get("zonesName"), dict))
 
     def load_dict(self, data) -> None:
         if not isinstance(data, dict):
@@ -684,7 +708,9 @@ class DailyDataCache:
         for key, target in (("consumption", self._consumption_data), ("generation", self._generation_data)):
             days = data.get(key)
             if isinstance(days, dict):
-                target.update({d: v for d, v in days.items() if isinstance(d, str) and isinstance(v, dict)})
+                for d, v in days.items():
+                    if isinstance(d, str) and (parsed := self._parse_day(v)) is not None:
+                        target[d] = parsed
         dates = [*self._consumption_data, *self._generation_data]
         if dates:
             try:

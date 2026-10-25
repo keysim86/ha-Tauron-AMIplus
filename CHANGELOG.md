@@ -7,8 +7,17 @@
   (`.storage/tauron_amiplus_daily_cache_<wpis>`, zapis 30 s po każdym udanym pobraniu, z kopii — serializacja
   idzie w osobnym wątku). Wcześniej żyła tylko w pamięci, więc każdy restart Home Assistant pobierał od nowa
   dane dzień po dniu (przy 12 miesiącach i zakresie konfigurowalnym ponad tysiąc zapytań, kilka minut bez
-  wartości w sensorach). Uszkodzony albo nieczytelny plik = pusta pamięć i zwykłe pobieranie.
+  wartości w sensorach). Na dysk idą tylko pola czytane przy sumowaniu zakresu (`allData`, `sum`, `zones`,
+  `zonesName`, `tariff`) — pola wykresów (`values`, `chartZones`, `labels`…) potrzebne są tylko przy świeżym
+  pobraniu; każdy dzień jako zwarty tekst JSON (HA zapisuje `.storage` z wcięciami, co podwajało rozmiar).
+  Uszkodzony albo nieczytelny plik albo dzień bez wymaganych pól = zwykłe pobieranie.
 - Usługa `clear_cache` czyści też plik na dysku; usunięcie wpisu integracji usuwa plik (`async_remove_entry`).
+
+### Fixed
+- `connector.py`: zakres konfigurowalny sięgający dalej niż pozostałe zakresy był pobierany od nowa przy KAŻDYM
+  odświeżaniu — granicę pamięci podręcznej wyznaczał jego koniec (`end - 2 dni`) zamiast początku, więc dni
+  starsze niż 12 miesięcy były kasowane po każdym pobraniu. Teraz `start - 2 dni`, jak przy 12 miesiącach
+  i bilansie rocznym.
 
 ## [1.1.14] - 2026-10-25
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- `connector.py`: pamięć podręczna dni z kompletem danych godzinowych jest zapisywana na dysk
+  (`.storage/tauron_amiplus_daily_cache_<wpis>`, zapis 30 s po każdym udanym pobraniu, z kopii — serializacja
+  idzie w osobnym wątku). Wcześniej żyła tylko w pamięci, więc każdy restart Home Assistant pobierał od nowa
+  dane dzień po dniu (przy 12 miesiącach i zakresie konfigurowalnym ponad tysiąc zapytań, kilka minut bez
+  wartości w sensorach). Uszkodzony albo nieczytelny plik = pusta pamięć i zwykłe pobieranie.
+- Usługa `clear_cache` czyści też plik na dysku; usunięcie wpisu integracji usuwa plik (`async_remove_entry`).
+
 ## [1.1.14] - 2026-10-25
 
 ### Fixed

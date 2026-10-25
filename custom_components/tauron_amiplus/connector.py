@@ -1,5 +1,6 @@
 """Update coordinator for TAURON sensors."""
 import asyncio
+import copy
 import datetime
 import logging
 import re
@@ -28,6 +29,9 @@ from .const import (
     CONST_URL_SERVICE_MOJ_TAURON,
     STORAGE_VERSION,
     STORAGE_KEY_PREFIX,
+    CACHE_STORAGE_VERSION,
+    CACHE_STORAGE_KEY_PREFIX,
+    CACHE_SAVE_DELAY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -133,18 +137,48 @@ class TauronAmiplusConnector:
         self._cache = DailyDataCache(meter_id)
         self._hass = hass
         self._storage_key = f"{STORAGE_KEY_PREFIX}_{config_entry_id}" if config_entry_id is not None else None
+        # Complete past days kept on disk, so a restart doesn't download them again day by day.
+        self._cache_store: Store | None = None
+        if config_entry_id is not None and hass is not None:
+            self._cache_store = Store(hass, CACHE_STORAGE_VERSION, f"{CACHE_STORAGE_KEY_PREFIX}_{config_entry_id}")
+        self._cache_loaded = False
         self._request_semaphore = asyncio.Semaphore(3)
 
     async def get_raw_data(self) -> TauronAmiplusRawData:
+        await self._load_cache()
         delays = [3, 10]
         for attempt, delay in enumerate(delays):
             try:
-                return await self._fetch_raw_data()
+                data = await self._fetch_raw_data()
+                self._save_cache()
+                return data
             except (ServerDisconnectedError, asyncio.TimeoutError):
                 _LOGGER.warning("[%s] Server disconnected, retrying in %ds (attempt %d/%d)...",
                                 self._meter_id, delay, attempt + 1, len(delays) + 1)
                 await asyncio.sleep(delay)
-        return await self._fetch_raw_data()
+        data = await self._fetch_raw_data()
+        self._save_cache()
+        return data
+
+    async def _load_cache(self) -> None:
+        if self._cache_loaded or self._cache_store is None:
+            return
+        self._cache_loaded = True
+        try:
+            stored = await self._cache_store.async_load()
+        except Exception as err:
+            _LOGGER.warning("[%s] Could not read the daily data cache, starting empty: %s", self._meter_id, err)
+            return
+        self._cache.load_dict(stored)
+        self.log(f"Restored daily data cache: {self._cache.size()}")
+
+    def _save_cache(self) -> None:
+        if self._cache_store is not None:
+            self._cache_store.async_delay_save(self._cache.to_dict, CACHE_SAVE_DELAY)
+
+    @staticmethod
+    async def async_remove_cache_for_entry(hass: HomeAssistant, config_entry_id: str) -> None:
+        await Store(hass, CACHE_STORAGE_VERSION, f"{CACHE_STORAGE_KEY_PREFIX}_{config_entry_id}").async_remove()
 
     async def _fetch_raw_data(self) -> TauronAmiplusRawData:
         data = TauronAmiplusRawData()
@@ -319,6 +353,7 @@ class TauronAmiplusConnector:
 
     def clear_cache(self) -> None:
         self._cache.clear()
+        self._save_cache()
 
     @staticmethod
     def _get_meters(text: str) -> list:
@@ -635,6 +670,29 @@ class DailyDataCache:
         )
         self._generation_data.clear()
         self._consumption_data.clear()
+
+    def size(self) -> str:
+        return f"consumption - {len(self._consumption_data)}, generation - {len(self._generation_data)}"
+
+    def to_dict(self) -> dict:
+        # A copy: the store serializes it in an executor thread while the event loop may keep adding days.
+        return copy.deepcopy({"consumption": self._consumption_data, "generation": self._generation_data})
+
+    def load_dict(self, data) -> None:
+        if not isinstance(data, dict):
+            return
+        for key, target in (("consumption", self._consumption_data), ("generation", self._generation_data)):
+            days = data.get(key)
+            if isinstance(days, dict):
+                target.update({d: v for d, v in days.items() if isinstance(d, str) and isinstance(v, dict)})
+        dates = [*self._consumption_data, *self._generation_data]
+        if dates:
+            try:
+                earliest = datetime.datetime.strptime(min(dates), "%Y-%m-%d")
+            except ValueError:
+                return
+            if self._max_date is None or earliest < self._max_date:
+                self._max_date = earliest
 
     @staticmethod
     def _format_date(date):

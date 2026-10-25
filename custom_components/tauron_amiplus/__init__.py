@@ -15,6 +15,7 @@ from .const import (
     CONF_SHOW_CONFIGURABLE, CONF_SHOW_CONFIGURABLE_DATE, CONF_SHOW_GENERATION, CONF_SHOW_PAYMENT,
     CONF_STORE_STATISTICS, CONF_TARIFF, DOMAIN, PLATFORMS,
 )
+from .connector import TauronAmiplusConnector
 from .coordinator import TauronAmiplusUpdateCoordinator
 from .services import register_all_services
 from .typing_helpers import TauronAmiplusRuntimeData, TauronAmiplusConfigEntry
@@ -102,6 +103,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: TauronAmiplusConf
         "tauron_amiplus_initial_refresh",
     )
     return True
+
+
+async def async_remove_entry(hass: HomeAssistant, config_entry: TauronAmiplusConfigEntry) -> None:
+    """Remove the on-disk daily data cache with the entry."""
+    await TauronAmiplusConnector.async_remove_cache_for_entry(hass, config_entry.entry_id)
 
 
 async def async_unload_entry(hass, config_entry) -> bool:

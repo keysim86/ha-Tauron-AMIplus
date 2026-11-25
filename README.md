@@ -2,9 +2,14 @@
 [![GitHub All Releases][downloads_total_shield]][releases]
 [![Installations][installations_shield]][releases]
 [![HACS Default][hacs_shield]][hacs]
+[![Home Assistant][ha_shield]][ha]
+[![License][license_shield]](LICENSE)
 
 [hacs_shield]: https://img.shields.io/static/v1.svg?label=HACS&message=Default&style=popout&color=green&labelColor=41bdf5&logo=HomeAssistantCommunityStore&logoColor=white
 [hacs]: https://hacs.xyz/docs/default_repositories
+[ha_shield]: https://img.shields.io/badge/Home%20Assistant-2022.12%2B-blue.svg?style=popout
+[ha]: https://www.home-assistant.io/
+[license_shield]: https://img.shields.io/github/license/keysim86/ha-Tauron-AMIplus.svg?style=popout
 [latest_release]: https://github.com/keysim86/ha-Tauron-AMIplus/releases/latest
 [releases_shield]: https://img.shields.io/github/release/keysim86/ha-Tauron-AMIplus.svg?style=popout
 [releases]: https://github.com/keysim86/ha-Tauron-AMIplus/releases
